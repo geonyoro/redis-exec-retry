@@ -3,7 +3,6 @@ import time
 import typing
 
 import redis
-from redis.retry import Retry
 
 
 class Redis(redis.Redis):
@@ -37,7 +36,7 @@ class LimitedTimeBackOff(redis.backoff.AbstractBackoff):
     ):
         self._max_run_secs = max_run_secs
         self._start = None
-        self.backoff_instance = backoff_instance
+        self._backoff_instance = backoff_instance
 
     def compute(self, failures):
         if failures == 1:
@@ -51,18 +50,3 @@ class LimitedTimeBackOff(redis.backoff.AbstractBackoff):
             raise BackoffTimeoutExceeded
 
         return self._backoff_instance.compute(failures)
-
-
-backoff_instance = redis.backoff.ExponentialBackoff()
-retry = Retry(
-    backoff=LimitedTimeBackOff(2, backoff_instance=backoff_instance),
-    retries=-1,
-    supported_errors=(
-        redis.exceptions.BusyLoadingError,
-        redis.exceptions.ConnectionError,
-        redis.exceptions.TimeoutError,
-        socket.timeout,
-    ),
-)
-r = Redis(port=1000, retry=retry)
-print(r.keys("*"))  # will run for 2 seconds before

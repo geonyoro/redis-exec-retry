@@ -15,12 +15,13 @@ Examples
 .. code-block:: python
 
     import redis
-    from redis_exec_retry import Redis, LimitedTimeBackoff
+    import socket
+    import redis_exec_retry
 
     max_seconds = 2
     backoff_instance = redis.backoff.ExponentialBackoff()
-    retry = Retry(
-        backoff=LimitedTimeBackOff(max_seconds, backoff_instance=backoff_instance),
+    retry = redis.retry.Retry(
+        backoff=redis_exec_retry.LimitedTimeBackOff(max_seconds, backoff_instance=backoff_instance),
         retries=-1,
         supported_errors=(
             redis.exceptions.BusyLoadingError,
@@ -29,6 +30,5 @@ Examples
             socket.timeout,
         ),
     )
-    r = Redis(port=1000, retry=retry)
-    print(r.keys("*"))  # will run for 2 seconds before raising Error
-
+    r = redis_exec_retry.Redis(port=1000, retry=retry)
+    print(r.keys("*"))  # will run for 2 seconds before raising redis_exec_retry.BackoffTimeoutExceeded
