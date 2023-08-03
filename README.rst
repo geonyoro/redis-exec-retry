@@ -13,6 +13,7 @@ Provide a `retry` to the Redis class which shall be used later.
 Examples
 --------
 .. code-block:: python
+
     import redis
     from redis_exec_retry import Redis, LimitedTimeBackoff
 
