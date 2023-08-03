@@ -13,6 +13,8 @@ Provide a `retry` to the Redis class which shall be used later.
 Examples
 --------
 .. code-block:: python
+    import redis
+    from redis_exec_retry import Redis, LimitedTimeBackoff
 
     max_seconds = 2
     backoff_instance = redis.backoff.ExponentialBackoff()
@@ -27,5 +29,5 @@ Examples
         ),
     )
     r = Redis(port=1000, retry=retry)
-    print(r.keys("*"))  # will run for 2 seconds before
+    print(r.keys("*"))  # will run for 2 seconds before raising Error
 
